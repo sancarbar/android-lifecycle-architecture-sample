@@ -55,6 +55,7 @@ public class MainActivity
             public void onChanged( @Nullable List<Message> messages )
             {
                 messagesAdapter.updateItems( messages );
+                messageEditText.setText( null );
             }
         } );
     }

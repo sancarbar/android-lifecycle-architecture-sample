@@ -1,3 +1,5 @@
 <resources>
   <string name="app_name">lfecycle-components</string>
+  <string name="enter_your_message">Enter your message</string>
+  <string name="send">Send</string>
 </resources>

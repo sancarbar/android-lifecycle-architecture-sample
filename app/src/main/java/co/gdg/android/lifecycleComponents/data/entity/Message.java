@@ -1,4 +1,4 @@
-package co.gdg.android.lifecycleComponents;
+package co.gdg.android.lifecycleComponents.data.entity;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
@@ -22,5 +22,11 @@ public class Message
 
     public Date sendDate;
 
+
+    public Message( String body )
+    {
+        this.body = body;
+        sendDate = new Date();
+    }
 }
 

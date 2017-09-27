@@ -1,8 +1,8 @@
 package co.gdg.android.lifecycleComponents.ui.activity;
 
-import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,10 +16,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.gdg.android.lifecycleComponents.R;
+import co.gdg.android.lifecycleComponents.data.MessagesViewModel;
 import co.gdg.android.lifecycleComponents.data.dao.MessageDao;
 import co.gdg.android.lifecycleComponents.data.entity.Message;
-import co.gdg.android.lifecycleComponents.data.model.Model;
-import co.gdg.android.lifecycleComponents.data.model.RoomModel;
 import co.gdg.android.lifecycleComponents.ui.adapter.MessagesAdapter;
 
 
@@ -35,9 +34,7 @@ public class MainActivity
     @BindView( R.id.message_edit_text )
     EditText messageEditText;
 
-    private Model model;
-
-    private ProgressDialog progressDialog;
+    private MessagesViewModel messagesViewModel;
 
     @Override
     protected void onCreate( Bundle savedInstanceState )
@@ -47,27 +44,17 @@ public class MainActivity
         ButterKnife.bind( this );
         configureRecyclerView();
         init();
-        progressDialog = new ProgressDialog( this );
     }
 
     private void init()
     {
-        AsyncTask.execute( new Runnable()
+        messagesViewModel = ViewModelProviders.of( this ).get( MessagesViewModel.class );
+        messagesViewModel.getMessages().observe( this, new Observer<List<Message>>()
         {
             @Override
-            public void run()
+            public void onChanged( @Nullable List<Message> messages )
             {
-                model = new RoomModel( getApplication() );
-                model.getMessageDao().findAllMessages().observe( MainActivity.this, new Observer<List<Message>>()
-                {
-                    @Override
-                    public void onChanged( @Nullable List<Message> messages )
-                    {
-                        messagesAdapter.updateItems( messages );
-                        messageEditText.setText( null );
-                        progressDialog.dismiss();
-                    }
-                } );
+                messagesAdapter.updateItems( messages );
             }
         } );
     }
@@ -82,7 +69,6 @@ public class MainActivity
 
     public void onSendMessageClicked( View view )
     {
-        progressDialog.show();
         final String messageBody = messageEditText.getText().toString();
         AsyncTask.execute( new Runnable()
         {
@@ -90,7 +76,7 @@ public class MainActivity
             public void run()
             {
                 Message message = new Message( messageBody );
-                MessageDao messageDao = model.getMessageDao();
+                MessageDao messageDao = messagesViewModel.getModel().getMessageDao();
                 messageDao.insertMessage( message );
             }
         } );

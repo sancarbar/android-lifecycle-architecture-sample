@@ -12,8 +12,7 @@ import java.util.Date;
 @Entity
 public class Message
 {
-    public
-    @PrimaryKey
+    public @PrimaryKey
     String id;
 
     public String body;
